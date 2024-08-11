@@ -14,7 +14,7 @@ import seaborn as sns
 
 def rename_tinagrast():
     path = r'E:\My Codes\Clustering Insulin Masoud\Data\dpt\tinagrast'
-    files = os.listdir()
+    files = os.listdir(path)
     files.reverse()
     for file in files:
         mo = re.search(r'(\d+.*)(\d)(.*)', file)
@@ -109,18 +109,13 @@ def all_plot_in_one_plot(all_info):
     sns.set_theme(context='paper', font_scale=1.2, style='dark', palette='viridis')
     fig, axs = plt.subplots(nrows=16 , ncols=3, figsize=(15, 40), dpi=300)
     colors = sns.color_palette('viridis')
-    ax_labels = []
-    plotted_labels = []
     for number, line in enumerate(all_info):
         absorbs, waves, info, drug_names, temps, weeks, normalized, branch_orders = line
-        skip_count = 0
         for i in range(len(info)):
-            ax_label = f'{temps[i]} week {weeks[i]}'
             if i ==0:
                 axs[i, number].set_title(info[0][2].title(), pad=10)
             if number==0:
-                axs[i, number].set_ylabel(ax_label, rotation=0, labelpad=30)
-                ax_labels.append(ax_label)
+                axs[i, number].set_ylabel(f'{temps[i]} week {weeks[i]}', rotation=0, labelpad=30)
             # print(drug_names[i], i)
             sns.lineplot(x=waves[i], y=normalized[i], color=colors[number], ax=axs[i, number])
     fig.savefig(f'Result\\all_plot_in_one.jpg')
@@ -353,8 +348,7 @@ def cluster_by_pca_hca_sklearn(data, info, waves, drug_names, n_clusters=4):
 
     # Calculate the linkage matrix
     Z = linkage(pca_data, method='ward')
-    Z = linkage(pca_data, method='complete')
-    
+
     # Plot the dendrogram in the second subplot
     result = dendrogram(Z, ax=ax2,labels=drug_names, orientation='left')
 
@@ -509,5 +503,5 @@ for drug in drugs:
     path = f'Data\\dpt\\{drug}\\*.dpt'
     result = main(path, n_clusters=2)
     all_info.append(result)
-# all_plot_in_one_plot(all_info)
-# all_plot_in_one_plot_in_branch_order(all_info)
+all_plot_in_one_plot(all_info)
+all_plot_in_one_plot_in_branch_order(all_info)
